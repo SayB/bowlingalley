@@ -44,7 +44,8 @@ use lithium\security\Auth;
 
         <?php if ($this->user->isLoggedIn()): ?>
             <li>
-                <?php echo $this->html->link('Scores', '/scores'); ?>
+<!--                --><?php //echo $this->html->link('Scores', '/scores'); ?>
+                <?php echo $this->html->link('My Games', '/games'); ?>
             </li>
         <?php endif; ?>
 
