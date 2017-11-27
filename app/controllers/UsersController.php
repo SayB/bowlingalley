@@ -8,6 +8,8 @@ use lithium\security\Auth;
 
 class UsersController extends \lithium\action\Controller {
 
+	public $requireAuth = ['logout'];
+
 	public function __construct(array $config = []) {
 		$config['render']['layout'] = 'bowlingalley';
 		parent::__construct($config);
@@ -29,14 +31,14 @@ class UsersController extends \lithium\action\Controller {
 
 			Session::write('flash.failure', 'Cannot save. Please check the errors below.');
 		} else {
-			$data = [
-				'firstname'				=> 'Sohaib'
-				, 'lastname'			=> 'Muneer'
-				, 'email'				=> 'sohaib.muneer@gmail.com'
-				, 'password'			=> 'sayb1234'
-				, 'confirm_password'	=> 'sayb1234'
-			];
-			$user->set($data);
+//			$data = [
+//				'firstname'				=> 'Sohaib'
+//				, 'lastname'			=> 'Muneer'
+//				, 'email'				=> 'sohaib.muneer@gmail.com'
+//				, 'password'			=> 'sayb1234'
+//				, 'confirm_password'	=> 'sayb1234'
+//			];
+//			$user->set($data);
 		}
 
 		$this->render(['data' => compact('user')]);
@@ -71,7 +73,7 @@ class UsersController extends \lithium\action\Controller {
 
 			Auth::set('user', $user->data());
 
-			$this->redirect('/users/login');
+			$this->redirect('/');
 			return;
 		}
 
@@ -88,41 +90,5 @@ class UsersController extends \lithium\action\Controller {
 		Session::write('flash.success', 'You\'ve been logged out successfully.');
 
 		$this->redirect('/');
-	}
-
-//	public function view() {
-//		$options = [];
-//		$path = func_get_args();
-//
-//		if (!$path || $path === ['home']) {
-//			$path = ['home'];
-//			$options['compiler'] = ['fallback' => true];
-//		}
-//
-//		$options['template'] = join('/', $path);
-//		return $this->render($options);
-//	}
-
-	public function testing() {
-		$data = [
-			'firstname'				=> 'Sohaib'
-			, 'lastname'			=> 'Muneer'
-			, 'email'				=> 'sohaib.muneer@gmail.com'
-			, 'password'			=> 'sayb1234'
-			, 'confirm_password'	=> 'sayb1234'
-		];
-
-		$user = User::create($data);
-		$result = $user->save();
-
-//		var_dump($result);
-
-		$all = User::find('all');
-
-		foreach($all as $record) {
-			var_dump($record->data());
-		}
-
-		die('done');
 	}
 }

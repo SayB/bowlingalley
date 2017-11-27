@@ -28,7 +28,6 @@ td.second-attempt {
     text-align: center;
     font-weight: bold;
 }
-
 .frames-container {
     border: solid 1px #333333;
 }
@@ -53,6 +52,8 @@ td.second-attempt {
     width: 33%;
     border-bottom: solid 1px #333333;
     border-left: solid 1px #333333;
+    text-align: center;
+    font-weight: bold;
 }
 
 .frame-total {
@@ -140,10 +141,11 @@ td.second-attempt {
         },
         finished: 0,
         conclude: function() {
-            alert('concluding game ..');
+            if (game.getFrame(10).isBonusShot()) {
+                return;
+            }
+
             game.score = $('#grand-total').html();
-            // ^-- good place to send the final game state to the server?
-            // -- more on that later I guess
 
             game.finished = 1;
 
@@ -152,19 +154,21 @@ td.second-attempt {
             var frames = [];
             for (var i=1; i < 11; i++) {
                 var frame = game.getFrame(i);
-                frames[i] = {
+                var dt = {
                     rolls: {
                         1: frame.getRolledPins(1),
                         2: frame.getRolledPins(2)
                     },
                     score: frame.getScore()
                 };
+
+                if (i == 10) {
+                    dt.rolls["bonus"] = frame.getRolledPins('bonus');
+                }
+
+                frames[i] = dt;
             }
 
-            console.log('Post Data: ');
-            console.log(JSON.stringify(frames));
-
-            return;
             $.post(
                 game.endPoint,
                 { jsonData: JSON.stringify(frames) },
@@ -176,7 +180,7 @@ td.second-attempt {
         getNewFrame: function() {
             return {
                 number: null,
-                totalAttempts: 2,
+                bonusShot: 0,
                 currentAttempt: 1,
                 frameScore: null,
                 isPlayed: 0,
@@ -194,7 +198,7 @@ td.second-attempt {
                     attempts: {
                         first: null,
                         second: null,
-                        bonus: null,
+                        third: null,
                         1: {
                             score: function(p) {
                                 var currFrame = game.getCurrentFrame();
@@ -208,11 +212,19 @@ td.second-attempt {
 
                                 if (currFrame.isStrike()) {
                                     toPaste = currFrame.symbolToPaste;
-                                    _htmlClass = '.second-attempt';
-                                    game.updateFrameScores();
-                                    currFrame.markPlayed();
-                                    game.activateNextFrame();
-                                    game.updateRollsPane();
+                                    if (currFrame.number < 10) {
+                                        _htmlClass = '.second-attempt';
+                                        game.updateFrameScores();
+                                        currFrame.markPlayed();
+                                        game.activateNextFrame();
+                                        game.updateRollsPane();
+                                    } else { // for 10th frame
+                                        if (p == 10) {
+                                            toPaste = '&times;';
+                                        }
+
+                                        game.updateFrameScores();
+                                    }
                                 }
 
                                 $(_id + ' ' + _htmlClass).html(toPaste);
@@ -226,6 +238,8 @@ td.second-attempt {
                                 var toPaste = p;
                                 if (currFrame.isSpare() || currFrame.isMiss()) {
                                     toPaste = currFrame.symbolToPaste;
+                                } else if (currFrame.number > 9 && p == 10) {
+                                    toPaste = '&times;';
                                 }
 
                                 var _id = currFrame.getHtmlFrameId();
@@ -233,6 +247,7 @@ td.second-attempt {
                                 game.updateFrameScores();
 
                                 if (currFrame.hasBonus()) {
+                                    currFrame.bonusShot = 1;
                                     game.updateRollsPane();
                                     return;
                                 }
@@ -247,10 +262,17 @@ td.second-attempt {
                             score: function(p) {
                                 var currFrame = game.getCurrentFrame();
                                 var attempts = currFrame.scores.attempts;
-                                attempts.bonus = p;
+                                attempts.third = p;
+                                var toPaste = p;
+
+                                if (p == 10) {
+                                    toPaste = '&times;';
+                                }
+
                                 var _id = currFrame.getHtmlFrameId();
-                                $(_id + ' ' + ' .bonus-attempt').html(p);
+                                $('#bonus-shot').html(toPaste);
                                 game.updateFrameScores();
+                                currFrame.markPlayed();
                             }
                         }
                     }
@@ -303,6 +325,17 @@ td.second-attempt {
                     }
 
                     var next1 = this.getNextFrame();
+
+                    if (this.number == 9) {
+                        if (next1.scores.attempts.first === null) {
+                            return false;
+                        }
+                        if (next1.scores.attempts.second === null) {
+                            return false;
+                        }
+                        return true;
+                    }
+
                     if (!next1.hasRolled()) {
                         return false;
                     }
@@ -346,7 +379,7 @@ td.second-attempt {
                     var map = {
                         1: "first",
                         2: "second",
-                        "bonus": "bonus"
+                        "bonus": "third"
                     };
 
                     var roll = map[attempt];
@@ -370,6 +403,16 @@ td.second-attempt {
                         var bonus = 0;
 
                         var next1 = me.getNextFrame();
+
+                        if (me.number == 9) {
+                            var r1 = next1.getRolledPins(1);
+                            var r2 = next1.getRolledPins(2);
+
+                            var prevScore = me.getPrevScore();
+                            var total = prevScore + r1 + r2 + 10;
+                            me.setFrameScore(total);
+                            return;
+                        }
 
                         if (next1.isStrike()) {
                             bonus = 10;
@@ -430,13 +473,14 @@ td.second-attempt {
                     }
 
                     var bonus = function() {
-                        alert('BONUS !!');
+//                        alert('BONUS !!~!!');
                         var total = me.getPrevScore()
                             + me.getRolledPins(1)
                             + me.getRolledPins(2)
                             + me.getRolledPins('bonus');
 
                         me.setFrameScore(total);
+                        me.bonusShot = 0;
                     }
 
                     var _map = {
@@ -458,6 +502,7 @@ td.second-attempt {
                     if (
                         this.hasBonus()
                         && this.scores.attempts.second !== null
+                        && this.bonusShot == 1
                     ) {
                         return true;
                     }
@@ -594,7 +639,7 @@ td.second-attempt {
         updateRollsPane: function() {
             var cf = this.getCurrentFrame();
             var maxPins = 10;
-            if (cf.currentAttempt > 1) {
+            if (cf.number < 10 && cf.currentAttempt > 1) {
                 maxPins = 10 - cf.scores.attempts.first;
             }
 
@@ -692,7 +737,7 @@ td.second-attempt {
                 <td class="first-attempt">&nbsp;</td>
                 <td class="second-attempt">&nbsp;</td>
             <?php if ($i >= 10): ?>
-                <td class="last-frame-attempt">&nbsp;</td>
+                <td class="last-frame-attempt" id="bonus-shot">&nbsp;</td>
             <?php endif; ?>
             </tr>
             <tr>

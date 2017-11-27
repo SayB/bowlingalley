@@ -36,10 +36,10 @@ Collection::formats(Media::class);
  * plugin's `webroot` directory into your main application's `webroot` directory, or adding routing
  * rules in your web server's configuration.
  */
-// use lithium\aop\Filters;
-// use lithium\action\Dispatcher;
-// use lithium\action\Response;
-//
+ use lithium\aop\Filters;
+ use lithium\action\Dispatcher;
+ use lithium\action\Response;
+
 // Filters::apply(Dispatcher::class, '_callable', function($params, $next) {
 // 	$url = ltrim($params['request']->url, '/');
 // 	list($library, $asset) = explode('/', $url, 2) + ["", ""];
@@ -59,4 +59,15 @@ Collection::formats(Media::class);
 // 	return $next($params);
 // });
 
+Media::type('ajax', ['application/xhtml+xml', 'text/html'], [
+	'view' => 'lithium\template\View',
+	'paths' => [
+		'template' => [
+			'{:library}/views/{:controller}/{:template}.ajax.php',
+			'{:library}/views/{:controller}/{:template}.html.php'
+		],
+		'layout' => '{:library}/views/layouts/default.ajax.php'
+	],
+	'conditions' => ['ajax' => true]
+])
 ?>

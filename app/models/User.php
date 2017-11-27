@@ -3,8 +3,9 @@
 namespace app\models;
 
 use lithium\aop\Filters;
-use lithium\security\Password;
 use lithium\util\Validator;
+use lithium\storage\Session;
+use lithium\security\Password;
 
 class User extends \lithium\data\Model {
 
@@ -36,6 +37,14 @@ class User extends \lithium\data\Model {
 			]
 		]
 	];
+
+	public static function isLoggedIn() {
+		if (Session::read('user')) {
+			return true;
+		}
+
+		return false;
+	}
 }
 
 Filters::apply('app\models\User', 'save', function($params, $next) {
