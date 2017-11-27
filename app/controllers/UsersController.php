@@ -65,13 +65,11 @@ class UsersController extends \lithium\action\Controller {
 			]);
 
 			$key = 'flash.failure';
-			if ($isGood && $user->exists()) {
+			if ($isGood && $user) {
 				$key = 'flash.success';
+				Session::write($key, $msgs[$key]);
+				Auth::set('user', $user->data());
 			}
-
-			Session::write($key, $msgs[$key]);
-
-			Auth::set('user', $user->data());
 
 			$this->redirect('/');
 			return;
