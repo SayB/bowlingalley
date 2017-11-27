@@ -25,7 +25,7 @@ class UsersController extends \lithium\action\Controller {
 
 			if ($user->save()) {
 				Session::write('flash.success', 'User saved successfully.');
-				$this->redirect('/users/register');
+				$this->redirect('/users/login');
 				return;
 			}
 
@@ -65,13 +65,16 @@ class UsersController extends \lithium\action\Controller {
 			]);
 
 			$key = 'flash.failure';
+			$redirect = '/users/login';
 			if ($isGood && $user) {
 				$key = 'flash.success';
-				Session::write($key, $msgs[$key]);
+				$redirect = '/';
 				Auth::set('user', $user->data());
 			}
 
-			$this->redirect('/');
+			Session::write($key, $msgs[$key]);
+
+			$this->redirect($redirect);
 			return;
 		}
 
