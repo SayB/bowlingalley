@@ -58,18 +58,18 @@ class UsersController extends \lithium\action\Controller {
 				, 'flash.success'	=> 'Logged in Successfully!'
 			];
 
-			$key = 'flash.failure';
-			if ($isGood) {
-				$key = 'flash.success';
-			}
-
-			Session::write($key, $msgs[$key]);
-
 			$user = User::find('first', [
 				'conditions'	=> [
 					'email'		=> $this->request->data['email']
 				]
 			]);
+
+			$key = 'flash.failure';
+			if ($isGood && $user->exists()) {
+				$key = 'flash.success';
+			}
+
+			Session::write($key, $msgs[$key]);
 
 			Auth::set('user', $user->data());
 
