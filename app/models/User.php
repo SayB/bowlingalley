@@ -34,6 +34,10 @@ class User extends \lithium\data\Model {
 			[
 				'email'
 				, 'message'		=> 'Please provide a valid email.'
+			],
+			[
+				'uniqEmail'
+				, 'message'		=> 'Email already exists. Please use a different email.'
 			]
 		]
 	];
@@ -74,4 +78,19 @@ Validator::add('confirmPassword', function($value, $type, $params) {
 	}
 
 	return ($params['values']['password'] == $params['values']['confirm_password']);
+});
+
+Validator::add('uniqEmail', function($value, $type, $params) {
+	$email = $params['values']['email'];
+	$user = \app\models\User::find('first', [
+		'conditions' => [
+			'email'		=> $email
+		]
+	]);
+
+	if ($user) {
+		return false;
+	}
+
+	return true;
 });
