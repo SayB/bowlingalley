@@ -23,15 +23,14 @@ use lithium\security\Auth;
 </head>
 <body class="lithified">
 <div class="container-narrow">
-
+<style>
+    div.error {
+        color: #cccccc;
+        font-weight: bold;
+    }
+</style>
 	<div class="masthead">
 		<ul class="nav nav-pills pull-right">
-        <?php if (!$this->user->isLoggedIn()): ?>
-			<li>
-                <?php echo $this->html->link('Join', '/users/register'); ?>
-			</li>
-        <?php endif; ?>
-
 			<li>
 				<?php
                     if ($this->user->isLoggedIn()) {
@@ -44,8 +43,10 @@ use lithium\security\Auth;
 
         <?php if ($this->user->isLoggedIn()): ?>
             <li>
-<!--                --><?php //echo $this->html->link('Scores', '/scores'); ?>
-                <?php echo $this->html->link('My Games', '/games'); ?>
+                <?php echo $this->html->link('My Tasks', '/tasks'); ?>
+            </li>
+            <li>
+                <?php echo $this->html->link('Add a Task', '/tasks/add'); ?>
             </li>
         <?php endif; ?>
 

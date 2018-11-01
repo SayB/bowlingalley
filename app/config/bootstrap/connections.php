@@ -63,39 +63,39 @@ use lithium\data\Connections;
  * Strict mode can be enabled or disabled, older MySQL versions were
  * by default non-strict.
  */
-// Connections::add('default', [
-// 	'type' => 'database',
-// 	'adapter' => 'MySql',
-// 	'host' => 'localhost',
-// 	'login' => 'root',
-// 	'password' => '',
-// 	'database' => 'my_app',
-// 	'encoding' => 'UTF-8',
-// 	'strict' => false
-// ]);
+ Connections::add('default', [
+ 	'type' => 'database',
+ 	'adapter' => 'MySql',
+ 	'host' => '127.0.0.1',
+ 	'login' => 'root',
+ 	'password' => 'root',
+ 	'database' => 'scores',
+ 	'encoding' => 'UTF-8',
+ 	'strict' => false
+ ]);
 
-Connections::add('default', [
-
-	'development'	=> [
-		'type'			=> 'database'
-		, 'adapter'		=> 'MySql'
-		, 'host'		=> '127.0.0.1'
-		, 'login'		=> 'root'
-		, 'password'	=> 'root'
-		, 'database'	=> 'scores'
-		, 'port'		=> '3306'
-		// fam mcdaddy
-		// abraham
-	]
-
-	, 'production'	=> [
-		'type'			=> 'database'
-		, 'adapter'		=> 'MySql'
-		, 'host'		=> '######'
-		, 'login'		=> '######'
-		, 'password'	=> '######'
-		, 'database'	=> 'trkr'
-	]
-
-]);
+//Connections::add('default', [
+//
+//	'development'	=> [
+//		'type'			=> 'database'
+//		, 'adapter'		=> 'MySql'
+//		, 'host'		=> '127.0.0.1'
+//		, 'login'		=> 'root'
+//		, 'password'	=> 'root'
+//		, 'database'	=> 'scores'
+//		, 'port'		=> '3306'
+//		// fam mcdaddy
+//		// abraham
+//	]
+//
+//	, 'production'	=> [
+//		'type'			=> 'database'
+//		, 'adapter'		=> 'MySql'
+//		, 'host'		=> '######'
+//		, 'login'		=> '######'
+//		, 'password'	=> '######'
+//		, 'database'	=> 'trkr'
+//	]
+//
+//]);
 

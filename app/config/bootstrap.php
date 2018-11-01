@@ -95,3 +95,14 @@ if (PHP_SAPI === 'cli') {
  * 		Make this Environment Dependent. This must not be set to `1` when in Production.
  */
 ini_set('display_errors', 1);
+
+function pr($var = null) {
+    echo '<pre>';
+    print_r($var);
+    echo '</pre>';
+}
+
+function prd($var = null) {
+    pr($var);
+    die;
+}

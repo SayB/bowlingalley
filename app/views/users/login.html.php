@@ -7,9 +7,12 @@
 
 	echo $this->form->create($user);
 
-	echo $this->form->field('email');
+	echo $this->form->field('question', [
+        'value'     => 'When do you want it?',
+        'disabled'   => true
+    ]);
 
-	echo $this->form->field('password', [
+	echo $this->form->field('answer', [
 		'type'      => 'password',
 		'label'     => 'Password'
 	]);

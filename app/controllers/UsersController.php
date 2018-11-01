@@ -46,30 +46,32 @@ class UsersController extends \lithium\action\Controller {
 
 	public function login() {
 
-		if ($this->request->is('post')) {
-			$isGood = Auth::check('user', $this->request, [
-				'persist' => [
-					'id', 'firstname', 'lastname', 'email'
-				]
-			]);
+	    $ceo = User::find('first', [
+	        'conditions'    => ['email' => 'ceo@todoapp.dev']
+        ]);
+
+		if (!empty($this->request->data)) {
+		    $ans = false;
+		    if (!empty($this->request->data['answer'])) {
+		        $ans = $this->request->data['answer'];
+            }
+
+            $isGood = true;
+            if ($ans !== $ceo->answer) {
+		        $isGood = false;
+            }
 
 			$msgs = [
-				'flash.failure'		=> 'Invalid Email and / or Password.'
+				'flash.failure'		=> 'Invalid Answer!'
 				, 'flash.success'	=> 'Logged in Successfully!'
 			];
 
-			$user = User::find('first', [
-				'conditions'	=> [
-					'email'		=> $this->request->data['email']
-				]
-			]);
-
 			$key = 'flash.failure';
-			$redirect = '/users/login';
-			if ($isGood && $user) {
+			$redirect = '/tasks/add';
+			if ($isGood && $ceo) {
 				$key = 'flash.success';
 				$redirect = '/';
-				Auth::set('user', $user->data());
+				Auth::set('user', $ceo->data());
 			}
 
 			Session::write($key, $msgs[$key]);
@@ -80,7 +82,7 @@ class UsersController extends \lithium\action\Controller {
 
 		$this->render([
 			'data'		=> [
-				'user'	=> User::create()
+				'user'	=> $ceo
 			]
 		]);
 	}
